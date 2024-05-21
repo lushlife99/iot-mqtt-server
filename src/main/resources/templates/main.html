@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cabinet Details</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>Cabinet Details</h1>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Last Modify Time</th>
+    </tr>
+    <tr>
+        <td th:text="${cabinet.id}" id="cabinet-id"></td>
+        <td th:text="${cabinet.status}" id="cabinet-status"></td>
+        <td th:text="${#temporals.format(cabinet.lastModifyTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+    </tr>
+</table>
+
+<button id="open-button">Open</button>
+<button id="close-button">Close</button>
+
+<h1>Cabinet Logs</h1>
+<table border="1">
+    <tr>
+        <th>Update Time</th>
+        <th>Updated Status</th>
+    </tr>
+    <tr th:each="log : ${cabinetLogs}">
+        <td th:text="${#temporals.format(log.updateTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td th:text="${log.updatedStatus}"></td>
+    </tr>
+</table>
+
+<script>
+    $(document).ready(function() {
+        var cabinetId = $('#cabinet-id').text();
+        var getStatus = function() {
+            return $('#cabinet-status').text().trim().toLowerCase();
+        };
+
+        $('#open-button').click(function() {
+            if (getStatus() === 'open') {
+                alert('Already Opened');
+            } else {
+                $.ajax({
+                    url: '/cabinet' + '/open',
+                    type: 'PUT',
+                    success: function(response) {
+                        alert('Cabinet opened successfully');
+                        // Optionally, update the status on the page
+                        location.reload();
+                    },
+                    error: function(error) {
+                        alert('Error opening cabinet');
+                    }
+                });
+            }
+        });
+
+        $('#close-button').click(function() {
+            if (getStatus() === 'close') {
+                alert('Already Closed');
+            } else {
+                $.ajax({
+                    url: '/cabinet' + '/close',
+                    type: 'PUT',
+                    success: function(response) {
+                        alert('Cabinet closed successfully');
+                        // Optionally, update the status on the page
+                        location.reload();
+                    },
+                    error: function(error) {
+                        alert('Error closing cabinet');
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

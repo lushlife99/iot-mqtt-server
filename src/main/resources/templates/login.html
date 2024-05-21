@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <style>
+    .flex{
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+<div class="w3-container w3-display-middle w3-col s5">
+  <div class="w3-panel w3-blue">
+    <h2>Login</h2>
+  </div>
+  <form class="w3-container">
+    <p>
+      <label>cabinet-id</label>
+      <input id="cabinet-id" class="w3-input" type="text">
+    </p>
+    <p>
+      <label>password</label>
+      <Input id="password" class="w3-input" type="password">
+    </p>
+
+  </form>
+  <div class="flex">
+    <input id="submit" class="w3-button w3-round-xxlarge w3-blue w3-col s20" value="로그인">
+  </div>
+</div>
+</body>
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script th:inline="javascript">
+  $(document).ready(function (){
+    $('#submit').click(function () {
+      event.preventDefault();
+      let sendData = {
+        id: $("#cabinet-id").val(),
+        password: $("#password").val(),
+      };
+      $.ajax({
+        type: 'post',
+        url: "/user/login",
+        headers:{
+          "Content-Type" : "application/json"
+        },
+        success: function (data) {
+          console.log("Login successful:", data);
+          location.href = "main";
+        },
+        error: function (xhr, status, error) {
+          console.error("Login failed:", error);
+        },
+        data: JSON.stringify(sendData),
+      })
+    });
+  });
+</script>

@@ -1,8 +1,11 @@
 package com.example.mqttserver.config;
 
+import com.example.mqttserver.service.CabinetSubHandler;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.core.MessageProducer;
@@ -16,9 +19,9 @@ import org.springframework.messaging.MessageHandler;
 @Configuration
 public class MqttBrokerConfig {
 
-    private static final String BROKER_URL = "tcp://localhost:1883";
+    public static final String BROKER_URL = "tcp://localhost:1883";
     private static final String BROKER_CLIENT_ID = "unique-client-id";
-    private static final String TOPIC_FILTER = "my-topic";
+    private static final String TOPIC_FILTER = "/pub/status";
     private static final String USERNAME = "user";
     private static final String PASSWORD = "1234";
 
@@ -53,13 +56,15 @@ public class MqttBrokerConfig {
     }
 
     @Bean
+    @Primary
     public MessageChannel mqttInputChannel() { // MQTT 구독 채널 생성
         return new DirectChannel();
     }
 
     @Bean
-    @ServiceActivator(inputChannel = "mqttInputChannel") // MQTT 구독 핸들러
-    public MessageHandler inboundMessageHandler() {
-        return new MqttMessageSubscriber();
+    @ServiceActivator(inputChannel = "mqttInputChannel")
+    public MessageHandler inboundMessageHandler(CabinetSubHandler cabinetSubHandler) {
+        return new MqttMessageSubscriber(cabinetSubHandler);
     }
+
 }
