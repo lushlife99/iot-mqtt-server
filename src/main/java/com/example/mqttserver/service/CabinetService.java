@@ -36,5 +36,4 @@ public class CabinetService {
         Cabinet cabinet = sessionManager.getSession(request);
         return cabinetLogRepository.findTop10ByCabinetIdOrderByUpdateTimeDesc(cabinet.getId());
     }
-
 }

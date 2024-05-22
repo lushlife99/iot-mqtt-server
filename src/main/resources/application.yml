@@ -1,17 +1,22 @@
 spring:
   datasource:
+    hikari:
+      max-lifetime: 30000
+      connection-test-query: SELECT 1
+      minimumIdle: 2
+      maximumPoolSize: 10
+      idleTimeout: 120000
+      connectionTimeout: 300000
+      leakDetectionThreshold: 300000
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/iot?serverTimezone=Asia/Seoul
-    username: chan
-    password: chan1234
-
+    url: jdbc:mysql://iot.cr6o4amqq5jo.ap-northeast-2.rds.amazonaws.com/iot?serverTimezone=Asia/Seoul&useLegacyDatetimeCode=false&characterEncoding=UTF-8
+    username: admin
+    password: admin1234
   jpa:
-    generate-ddl: true
-    open-in-view: true
     hibernate:
       ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: false
     properties:
-      hibernate.format_sql: true
+      hibernate:
+        format_sql: true
+    open-in-view: false
+    show-sql: false
