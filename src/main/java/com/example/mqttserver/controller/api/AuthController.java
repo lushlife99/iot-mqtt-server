@@ -18,8 +18,7 @@ public class AuthController {
     private final CabinetService cabinetService;
 
     @PostMapping("/user/login")
-    public ResponseEntity login(@RequestBody Cabinet cabinet, HttpServletResponse response) throws BadRequestException {
-        System.out.println("AuthController.login");
+    public ResponseEntity login(@RequestBody Cabinet cabinet, HttpServletResponse response) {
         cabinetService.login(cabinet, response);
         return new ResponseEntity(HttpStatus.OK);
     }

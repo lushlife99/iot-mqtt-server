@@ -5,11 +5,9 @@ spring:
       connection-test-query: SELECT 1
       minimumIdle: 2
       maximumPoolSize: 10
-      idleTimeout: 120000
       connectionTimeout: 300000
-      leakDetectionThreshold: 300000
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://iot.cr6o4amqq5jo.ap-northeast-2.rds.amazonaws.com/iot?serverTimezone=Asia/Seoul&useLegacyDatetimeCode=false&characterEncoding=UTF-8
+    url: jdbc:mysql://iot.cr6o4amqq5jo.ap-northeast-2.rds.amazonaws.com:3306/iot?serverTimezone=Asia/Seoul&useLegacyDatetimeCode=false&characterEncoding=UTF-8
     username: admin
     password: admin1234
   jpa:

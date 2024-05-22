@@ -1,5 +1,6 @@
 package com.example.mqttserver.controller.api;
 
+import com.example.mqttserver.dto.CabinetDto;
 import com.example.mqttserver.model.Cabinet;
 import com.example.mqttserver.model.CabinetLog;
 import com.example.mqttserver.service.CabinetControlService;
@@ -23,12 +24,12 @@ public class SmartCabinetApiController {
     private final CabinetService cabinetService;
 
     @PutMapping("/open")
-    public Cabinet openCabinet(HttpServletRequest request) throws BadRequestException, InterruptedException {
+    public CabinetDto openCabinet(HttpServletRequest request) throws InterruptedException {
         return cabinetControlService.changeToOpen(request);
     }
 
     @PutMapping("/close")
-    public Cabinet closeCabinet(HttpServletRequest request) throws BadRequestException, InterruptedException {
+    public CabinetDto closeCabinet(HttpServletRequest request) throws InterruptedException {
         return cabinetControlService.changeToClose(request);
     }
 

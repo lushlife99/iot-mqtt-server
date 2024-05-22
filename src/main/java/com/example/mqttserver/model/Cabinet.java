@@ -23,6 +23,6 @@ public class Cabinet implements Serializable {
     @Enumerated
     private CabinetStatus status; // 문 개폐상태
     private LocalDateTime lastModifyTime;
-    @OneToMany(fetch = FetchType.LAZY)
-    List<CabinetLog> cabinetLogList = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY) @Builder.Default
+    private List<CabinetLog> cabinetLogList = new ArrayList<>();
 }

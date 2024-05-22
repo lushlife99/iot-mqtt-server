@@ -28,6 +28,9 @@ public class CabinetSubHandler {
                 .updatedStatus(cabinetStatus)
                 .updateTime(LocalDateTime.now())
                 .build();
+
+        cabinetRepository.save(cabinet);
         cabinetLogRepository.save(cabinetLog);
+
     }
 }

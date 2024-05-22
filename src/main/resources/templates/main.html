@@ -4,6 +4,38 @@
     <meta charset="UTF-8">
     <title>Cabinet Details</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #loading-container {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #loading {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #status-message {
+            display: none;
+            font-size: 14px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        button {
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
 <h1>Cabinet Details</h1>
@@ -16,12 +48,16 @@
     <tr>
         <td th:text="${cabinet.id}" id="cabinet-id"></td>
         <td th:text="${cabinet.status}" id="cabinet-status"></td>
-        <td th:text="${#temporals.format(cabinet.lastModifyTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td th:text="${#temporals.format(cabinet.lastModifyTime, 'yyyy-MM-dd HH:mm:ss')}" id="cabinet-last-modify-time"></td>
     </tr>
 </table>
 
 <button id="open-button">Open</button>
 <button id="close-button">Close</button>
+<div id="loading-container">
+    <div id="loading"></div>
+    <span id="status-message">요청중...</span>
+</div>
 
 <h1>Cabinet Logs</h1>
 <table border="1">
@@ -41,21 +77,57 @@
         var getStatus = function() {
             return $('#cabinet-status').text().trim().toLowerCase();
         };
+        var formatDateTime = function(dateString) {
+            var date = new Date(dateString);
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var day = ('0' + date.getDate()).slice(-2);
+            var hours = ('0' + date.getHours()).slice(-2);
+            var minutes = ('0' + date.getMinutes()).slice(-2);
+            var seconds = ('0' + date.getSeconds()).slice(-2);
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        };
+        var updateCabinetDetails = function(cabinet) {
+            $('#cabinet-status').text(cabinet.status);
+            $('#cabinet-last-modify-time').text(formatDateTime(cabinet.lastModifyTime));
+        };
+        var disableButtons = function() {
+            $('#open-button').prop('disabled', true);
+            $('#close-button').prop('disabled', true);
+        };
+        var enableButtons = function() {
+            $('#open-button').prop('disabled', false);
+            $('#close-button').prop('disabled', false);
+        };
+        var showLoading = function() {
+            $('#loading').show();
+            $('#status-message').show();
+        };
+        var hideLoading = function() {
+            $('#loading').hide();
+            $('#status-message').hide();
+        };
 
         $('#open-button').click(function() {
             if (getStatus() === 'open') {
                 alert('Already Opened');
             } else {
+                disableButtons();
+                showLoading();
                 $.ajax({
-                    url: '/cabinet' + '/open',
+                    url: '/cabinet/open',
                     type: 'PUT',
                     success: function(response) {
                         alert('Cabinet opened successfully');
-                        // Optionally, update the status on the page
-                        location.reload();
+                        window.location.href = '/main';
                     },
                     error: function(error) {
+                        console.log(error);
                         alert('Error opening cabinet');
+                    },
+                    complete: function() {
+                        enableButtons();
+                        hideLoading();
                     }
                 });
             }
@@ -65,16 +137,22 @@
             if (getStatus() === 'close') {
                 alert('Already Closed');
             } else {
+                disableButtons();
+                showLoading();
                 $.ajax({
-                    url: '/cabinet' + '/close',
+                    url: '/cabinet/close',
                     type: 'PUT',
                     success: function(response) {
                         alert('Cabinet closed successfully');
-                        // Optionally, update the status on the page
-                        location.reload();
+                        window.location.href = '/main';
                     },
                     error: function(error) {
+                        console.log(error);
                         alert('Error closing cabinet');
+                    },
+                    complete: function() {
+                        enableButtons();
+                        hideLoading();
                     }
                 });
             }

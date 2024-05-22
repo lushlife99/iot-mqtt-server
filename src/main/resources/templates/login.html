@@ -51,8 +51,8 @@
           console.log("Login successful:", data);
           location.href = "main";
         },
-        error: function (xhr, status, error) {
-          console.error("Login failed:", error);
+        error: function () {
+          alert("Cabinet-id와 password를 확인하세요");
         },
         data: JSON.stringify(sendData),
       })

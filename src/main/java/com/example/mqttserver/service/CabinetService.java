@@ -1,6 +1,8 @@
 package com.example.mqttserver.service;
 
 import com.example.mqttserver.enums.CabinetStatus;
+import com.example.mqttserver.error.CustomException;
+import com.example.mqttserver.error.ErrorCode;
 import com.example.mqttserver.model.Cabinet;
 import com.example.mqttserver.model.CabinetLog;
 import com.example.mqttserver.repository.CabinetLogRepository;
@@ -24,15 +26,17 @@ public class CabinetService {
     private final CabinetLogRepository cabinetLogRepository;
     private final CabinetRepository cabinetRepository;
 
-    public void login(Cabinet cabinet, HttpServletResponse response) throws BadRequestException {
-        cabinet = cabinetRepository.findByIdAndPassword(cabinet.getId(), cabinet.getPassword()).orElseThrow(BadRequestException::new);
+    public void login(Cabinet cabinet, HttpServletResponse response) {
+        cabinet = cabinetRepository.findByIdAndPassword(cabinet.getId(), cabinet.getPassword()).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
         sessionManager.createSession(cabinet, response);
     }
 
-    public Cabinet getCabinet(HttpServletRequest request) throws BadRequestException {
-        return sessionManager.getSession(request);
+    public Cabinet getCabinet(HttpServletRequest request) {
+        Cabinet cabinet = sessionManager.getSession(request);
+        cabinet = cabinetRepository.findById(cabinet.getId()).orElseThrow(() -> new CustomException(ErrorCode.BAD_REQUEST));
+        return cabinet;
     }
-    public List<CabinetLog> getCabinetLogs(HttpServletRequest request) throws BadRequestException {
+    public List<CabinetLog> getCabinetLogs(HttpServletRequest request) {
         Cabinet cabinet = sessionManager.getSession(request);
         return cabinetLogRepository.findTop10ByCabinetIdOrderByUpdateTimeDesc(cabinet.getId());
     }

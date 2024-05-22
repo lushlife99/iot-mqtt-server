@@ -21,7 +21,7 @@ public class MqttBrokerConfig {
 
     public static final String BROKER_URL = "tcp://localhost:1883";
     private static final String BROKER_CLIENT_ID = "unique-client-id";
-    private static final String TOPIC_FILTER = "/pub/status";
+    private static final String TOPIC_FILTER = "/pub/#";
     private static final String USERNAME = "user";
     private static final String PASSWORD = "1234";
 
