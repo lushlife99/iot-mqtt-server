@@ -59,7 +59,8 @@ public class CabinetControlService {
             mqttClient.connect();
             MqttMessage mqttMessage = new MqttMessage();
             mqttMessage.setPayload(cabinetStatus.toString().getBytes());
-            mqttClient.publish(QUEUE_PREFIX + cabinetId, mqttMessage.getPayload(), 2, true);
+            mqttMessage.setQos(2);
+            mqttClient.publish(QUEUE_PREFIX + cabinetId, mqttMessage);
             mqttClient.disconnect();
         } catch (MqttException e) {
             e.printStackTrace();
