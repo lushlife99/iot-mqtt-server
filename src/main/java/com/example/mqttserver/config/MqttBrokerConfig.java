@@ -1,7 +1,6 @@
 package com.example.mqttserver.config;
 
 import com.example.mqttserver.service.CabinetSubHandler;
-import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +11,7 @@ import org.springframework.integration.core.MessageProducer;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
+import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
@@ -26,7 +26,7 @@ public class MqttBrokerConfig {
     private static final String PASSWORD = "1234";
 
     @Bean
-    public MqttPahoClientFactory mqttClientFactory() { // MQTT 클라이언트 관련 설정
+    public MqttPahoClientFactory mqttClientFactory() {
         var factory = new DefaultMqttPahoClientFactory();
         var options = new MqttConnectOptions();
         options.setServerURIs(new String[]{BROKER_URL});
@@ -41,7 +41,7 @@ public class MqttBrokerConfig {
     public MessageProducer inboundChannel(
             MqttPahoClientFactory mqttClientFactory,
             MessageChannel mqttInputChannel
-    ) { // inboundChannel 어댑터
+    ) {
         var adapter = new MqttPahoMessageDrivenChannelAdapter(
                 BROKER_URL,
                 BROKER_CLIENT_ID,
@@ -50,14 +50,14 @@ public class MqttBrokerConfig {
         );
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
-        adapter.setQos(1);
+        adapter.setQos(2);
         adapter.setOutputChannel(mqttInputChannel);
         return adapter;
     }
 
     @Bean
     @Primary
-    public MessageChannel mqttInputChannel() { // MQTT 구독 채널 생성
+    public MessageChannel mqttInputChannel() {
         return new DirectChannel();
     }
 
@@ -65,6 +65,20 @@ public class MqttBrokerConfig {
     @ServiceActivator(inputChannel = "mqttInputChannel")
     public MessageHandler inboundMessageHandler(CabinetSubHandler cabinetSubHandler) {
         return new MqttMessageSubscriber(cabinetSubHandler);
+    }
+
+    @Bean
+    public MessageChannel mqttOutboundChannel() {
+        return new DirectChannel();
+    }
+
+    @Bean
+    @ServiceActivator(inputChannel = "mqttOutboundChannel")
+    public MessageHandler mqttOutbound() {
+        var messageHandler = new MqttPahoMessageHandler(BROKER_CLIENT_ID + "_outbound", mqttClientFactory());
+        messageHandler.setAsync(true);
+        messageHandler.setDefaultTopic("/pub/out");
+        return messageHandler;
     }
 
 }
