@@ -27,7 +27,7 @@ public class CabinetControlService {
     private final String CHANGE_COMMAND = "CHANGE";
     private final String QUEUE_PREFIX = "/queue/";
     private final CabinetRepository cabinetRepository;
-    private final int WAIT_TIME = 3000;
+    private final int WAIT_TIME = 5000;
 
     @Transactional
     public CabinetDto changeToOpen(HttpServletRequest request) throws InterruptedException {
