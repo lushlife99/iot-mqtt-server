@@ -16,9 +16,8 @@ import java.time.LocalDateTime;
 @Slf4j
 public class MqttMessageSubscriber implements MessageHandler {
 
-    private static final String CLIENT_ID_HEADER = "id";
-    private static final String TOPIC_HEADER = "mqtt_receivedTopic";
-    private static final String CHANGE_METHOD_VALUE = "status";
+    private final static String TOPIC_HEADER = "mqtt_receivedTopic";
+    private final static String CHANGE_METHOD_VALUE = "status";
     private final CabinetSubHandler cabinetSubHandler;
 
     public MqttMessageSubscriber(CabinetSubHandler cabinetSubHandler) {
@@ -27,21 +26,14 @@ public class MqttMessageSubscriber implements MessageHandler {
 
     @Override
     public void handleMessage(Message<?> message) throws MessagingException {
-        MessageHeaders headers = message.getHeaders();
-        String topic = headers.get(TOPIC_HEADER).toString();
-
-        // Check if the topic matches the desired pattern
-        if (!topic.startsWith("/pub/")) {
-            log.warn("Message received from an undesired topic: {}", topic);
-            return;  // Ignore messages not matching the /pub/# pattern
-        }
-
         log.info("time = {}", LocalDateTime.now());
         log.info("message arrived. message = {}", message.toString());
 
+        MessageHeaders headers = message.getHeaders();
+        String topic = headers.get(TOPIC_HEADER).toString();
         String[] topicParts = topic.split("/");
         if (topicParts.length != 4) {
-            log.warn("Invalid topic length: {}", topicParts.length);
+            System.out.println(topicParts.length);
             throw new CustomException(ErrorCode.BAD_REQUEST);
         }
 
@@ -55,5 +47,7 @@ public class MqttMessageSubscriber implements MessageHandler {
                 throw new RuntimeException(e);
             }
         }
+
+
     }
 }
