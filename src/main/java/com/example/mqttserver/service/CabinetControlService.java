@@ -24,7 +24,7 @@ public class CabinetControlService {
     private final SessionManager sessionManager;
     private final String QUEUE_PREFIX = "/queue/";
     private final CabinetRepository cabinetRepository;
-    private final int WAIT_TIME = 3000;
+    private final int WAIT_TIME = 6000;
     private final MqttClient mqttClient;
 
     @Transactional
@@ -56,7 +56,6 @@ public class CabinetControlService {
         MqttMessage mqttMessage = new MqttMessage();
         mqttMessage.setPayload(cabinetStatus.toString().getBytes());
         try {
-            mqttClient.publish(QUEUE_PREFIX + cabinetId, mqttMessage);
             mqttClient.publish(QUEUE_PREFIX + cabinetId, mqttMessage);
             mqttClient.publish(QUEUE_PREFIX + cabinetId, mqttMessage);
         } catch (MqttException e) {
